@@ -1,40 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtGui import QWheelEvent
-from datasets.models.Database import Database
-from datasets.models.Store import Store
+from PyQt5.QtCore import Qt
 
-class QTableWidgetCustom(QTableWidget):
-    def __init__(self):
-        QTableWidget.__init__(self)
-    def wheelEvent(self, evt):
-        super().wheelEvent(evt)
-        scrollbar = self.verticalScrollBar()
-        current = scrollbar.value()
-        maximum = scrollbar.maximum()
-
-        if current > maximum * Table.PERCENT_TO_START_LOADING:
-            self.add_rows_to_table()
-    def add_rows_to_table(self):
-        rows = self.get_data_to_add()
-        _table = Table()
-        for r in rows:
-            _table.add_row_to_table(self, r)
-
-    def get_data_to_add(self):
-        db = Database()
-
-        current_tab = Store.get_current_tab()
-        last_row = current_tab['last_row_loaded']
-        last_row_loaded = last_row + Database.ROWS_PER_LOAD
-        data = db.get_table_data(current_tab['title'], last_row)
-
-        Store.set_last_row(Store.get_current_tab(), last_row_loaded)
-
-        return data['rows']
-
+from app.models.Database import Database
+from app.models.Store import Store
 
 class Table(QWidget):
+
     PERCENT_TO_START_LOADING = 0.9
 
     def __init__(self):
@@ -50,7 +21,7 @@ class Table(QWidget):
         return table
 
     def init_table(self, headers, rows):
-        table = QTableWidgetCustom()
+        table = QTableWidgetCustom(self)
         table.setEnabled(True)
         table.setColumnCount(len(headers))
         table.setRowCount(len(rows))
@@ -78,3 +49,36 @@ class Table(QWidget):
         table.insertRow(rowPosition)
 
         self.set_row_columns(table, row, rowPosition)
+
+    def add_rows_to_table(self, table):
+        rows = self.get_data_to_add()
+        for r in rows:
+            self.add_row_to_table(table, r)
+
+    def get_data_to_add(self):
+        db = Database()
+
+        current_tab = Store.get_current_tab()
+
+        last_row = current_tab['last_row_loaded']
+        last_row_loaded = last_row + Database.ROWS_PER_LOAD
+
+        data = db.get_table_data(current_tab['title'], last_row)
+
+        Store.set_last_row(Store.get_current_tab(), last_row_loaded)
+
+        return data['rows']
+
+class QTableWidgetCustom(QTableWidget):
+    def __init__(self, table):
+        QTableWidget.__init__(self)
+        self.table = table
+
+    def wheelEvent(self, evt):
+        super().wheelEvent(evt)
+        scrollbar = self.verticalScrollBar()
+        current = scrollbar.value()
+        maximum = scrollbar.maximum()
+
+        if current > maximum * self.table.PERCENT_TO_START_LOADING:
+            self.table.add_rows_to_table(self)

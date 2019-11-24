@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QTabWidget
-from datasets.views.Table import Table
 from PyQt5.QtCore import pyqtSlot
-from datasets.models.Database import Database
-from datasets.models.Store import Store
+
+from app.models.Database import Database
+from app.models.Store import Store
+from app.views.Table import Table
 
 class Tabs(QWidget):
     def __init__(self, parent):

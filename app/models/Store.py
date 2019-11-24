@@ -17,4 +17,3 @@ class Store():
     @staticmethod
     def set_last_row(tab, value):
         tab['last_row_loaded'] = value
-        # Store.tabs[tab]['last_row_loaded'] = value
