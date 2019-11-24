@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 
 class Database():
-    DB_PATH = 'datasets/assets/databases/numeral-gestures/'
+    DB_PATH = '../../assets/databases/numeral-gestures/'
     DB_FILENAME = 'database.sqlite'
     ROWS_PER_LOAD = 50
 
@@ -16,15 +16,15 @@ class Database():
     def init_connection(self):
         conn = None
         try:
-            conn = sqlite3.connect(self.get_database_path()) # или :memory: чтобы сохранить в RAM
+            conn = sqlite3.connect(self.get_database_path())
         except Error as _e:
             print(_e)
         return conn
 
     def get_database_path(self):
-        # curDir = os.path.dirname(os.path.abspath(__file__))
-        cur_dir = os.getcwd()
-        return cur_dir + '/' + Database.DB_PATH + Database.DB_FILENAME
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        path = cur_dir + '/' + Database.DB_PATH + Database.DB_FILENAME
+        return path
 
     def get_table_data(self, name, start):
         query = "SELECT * FROM %s LIMIT ? OFFSET ?" %(name)
