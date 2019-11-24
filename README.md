@@ -1,1 +1,1 @@
-datasets
+Educational project using PyQt5
