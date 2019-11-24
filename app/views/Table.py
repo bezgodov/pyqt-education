@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt
 
 from app.models.Database import Database
@@ -22,12 +22,13 @@ class Table(QWidget):
 
     def init_table(self, headers, rows):
         table = QTableWidgetCustom(self)
-        table.setEnabled(True)
         table.setColumnCount(len(headers))
         table.setRowCount(len(rows))
 
         table.setHorizontalHeaderLabels(headers)
         table.resizeColumnsToContents()
+        table.resizeRowsToContents() # this line doesn't work actually, next one span cells to theirs content
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
         return table
 

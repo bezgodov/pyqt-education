@@ -18,5 +18,5 @@ class Main(QDialog):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Main()
+    Main()
     sys.exit(app.exec_())
