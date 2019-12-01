@@ -1,16 +1,13 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QTabWidget
+from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QTabWidget
 from PyQt5.QtCore import pyqtSlot
 
 from app.models.Database import Database
 from app.models.Store import Store
 from app.views.Table import Table
 
-class Tabs(QWidget):
-    def __init__(self, parent):
-        super(QWidget, self).__init__(parent)
-
-        self.tabs = []
-        self.parent = parent
+class Tabs(QTabWidget):
+    def __init__(self):
+        QTabWidget.__init__(self)
 
     def make_tabs(self):
         tabs = []
@@ -30,29 +27,17 @@ class Tabs(QWidget):
                 'last_row_loaded': Database.ROWS_PER_LOAD,
             })
 
-        self.tabs = self.init_tabs()
-        self.add_tabs(self.tabs, tabs)
+        self.init_tabs()
+        self.add_tabs(tabs)
 
     def init_tabs(self):
-        tabs_layout = QVBoxLayout(self)
+        self.resize(900, 900)
+        self.setMinimumSize(640, 480)
 
-        tabs = QTabWidget()
-        tabs.resize(900, 900)
-        tabs.setMinimumSize(640, 480)
+        self.currentChanged.connect(self.tab_click)
 
-        tabs.currentChanged.connect(self.tab_click)
-
-        tabs_layout.addWidget(tabs)
-        self.parent.setLayout(tabs_layout)
-
-        return tabs
-
-    def add_tabs(self, tabs_widget, tabs):
+    def add_tabs(self, tabs):
         for i, _tab in enumerate(tabs):
-            tab = QWidget()
-
-            layout = QGridLayout(self)
-
             _table = Table()
             table = _table.generate_table(
                 list(map(lambda t: str(t), _tab['content']['headers'])),
@@ -61,11 +46,9 @@ class Tabs(QWidget):
 
             Store.add_table(i, _table)
 
-            tabs_widget.addTab(tab, _tab['title'])
-            layout.addWidget(table)
-            tab.setLayout(layout)
+            self.addTab(_table, _tab['title'])
 
     @pyqtSlot()
     def tab_click(self):
-        current_tab = self.tabs.currentIndex()
+        current_tab = self.currentIndex()
         Store.set_current_tab(current_tab)

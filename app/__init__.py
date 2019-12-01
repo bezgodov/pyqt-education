@@ -6,7 +6,7 @@ class App():
     def __init__(self, parent):
         Store.app = parent
 
-        _tabs = Tabs(parent)
+        _tabs = Tabs()
         _tabs.make_tabs()
 
         self.initUI(parent)

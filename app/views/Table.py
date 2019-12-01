@@ -13,6 +13,7 @@ class Table(QTableWidget):
         QTableWidget.__init__(self)
         self.db = Database()
         self.setMinimumSize(640, 480)
+        self.resize(900, 900)
 
     def init_signals(self):
         self.cellChanged.connect(self.cell_cnanged)
