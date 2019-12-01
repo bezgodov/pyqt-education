@@ -90,10 +90,7 @@ class Database():
     def insert_row_to_table(self, values):
         _table = Store.get_current_tab()['title']
         placeholder = ','.join(['?' for v in values])
-        print(placeholder)
         query = 'INSERT INTO %s VALUES (%s)' %(_table, placeholder)
-        print(query)
-        print(values)
         cur = self.get_cursor()
         cur.execute(query, values)
 
