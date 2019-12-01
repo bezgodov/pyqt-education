@@ -1,11 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from app import App
 
 # Chosen dataset: https://www.kaggle.com/corrphilip/numeral-gestures/
 
-class Main(QDialog):
+class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Numeral gestures")
