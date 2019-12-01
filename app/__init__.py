@@ -1,7 +1,5 @@
-import sys
-from PyQt5.QtWidgets import QAction, qApp
-
 from app.views.Tabs import Tabs
+from app.views.Menu import Menu
 from app.models.Store import Store
 
 class App():
@@ -15,13 +13,4 @@ class App():
         parent.setCentralWidget(_tabs)
 
     def initUI(self, parent):
-        Store.show_message_in_status_bar('Ready')
-
-        exit_action = QAction("& Exit app", parent)
-        exit_action.setStatusTip('Close app window')
-        exit_action.setShortcut("Ctrl+Q")
-        exit_action.triggered.connect(qApp.quit)
-
-        main_menu = parent.menuBar()
-        file_menu = main_menu.addMenu('File')
-        file_menu.addAction(exit_action)
+        Menu.init_menu(parent)

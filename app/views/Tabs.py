@@ -48,7 +48,7 @@ class Tabs(QWidget):
         return tabs
 
     def add_tabs(self, tabs_widget, tabs):
-        for _tab in tabs:
+        for i, _tab in enumerate(tabs):
             tab = QWidget()
 
             layout = QGridLayout(self)
@@ -58,6 +58,8 @@ class Tabs(QWidget):
                 list(map(lambda t: str(t), _tab['content']['headers'])),
                 _tab['content']['rows']
             )
+
+            Store.add_table(i, _table)
 
             tabs_widget.addTab(tab, _tab['title'])
             layout.addWidget(table)

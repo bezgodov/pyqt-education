@@ -40,6 +40,14 @@ class Database():
             'rows': rows,
         }
 
+    def get_table_columns_names(self, name):
+        query = "SELECT * FROM %s" %(name)
+        cur = self.get_cursor()
+        cur.execute(query)
+        headers = self.get_table_headers(cur.description)
+
+        return headers
+
     def get_table_headers(self, desc):
         return [d[0] for d in desc]
 
@@ -78,3 +86,23 @@ class Database():
 
         message = 'Removed row from table "%s" where "%s" is "%s"' %(_table, pk, pk_id)
         Store.show_message_in_status_bar(message)
+
+    def insert_row_to_table(self, values):
+        _table = Store.get_current_tab()['title']
+        placeholder = ','.join(['?' for v in values])
+        print(placeholder)
+        query = 'INSERT INTO %s VALUES (%s)' %(_table, placeholder)
+        print(query)
+        print(values)
+        cur = self.get_cursor()
+        cur.execute(query, values)
+
+        self.connection.commit()
+
+        self.insert_row(values)
+
+    def insert_row(self, row):
+        cur_tab = Store.get_current_tab()
+        _table = cur_tab['table']
+
+        _table.add_row_to_table(row)

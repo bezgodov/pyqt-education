@@ -12,8 +12,16 @@ class Store():
         return Store.tabs[Store.current_tab]
 
     @staticmethod
+    def get_all_tabs():
+        return Store.tabs
+
+    @staticmethod
     def add_tab(tab):
         Store.tabs.append(tab)
+
+    @staticmethod
+    def add_table(index, table):
+        Store.tabs[index]['table'] = table
 
     @staticmethod
     def set_last_row(tab, value):
