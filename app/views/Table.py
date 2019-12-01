@@ -13,6 +13,25 @@ class Table(QTableWidget):
         self.db = Database()
         self.setMinimumSize(640, 480)
 
+    def init_signals(self):
+        self.cellChanged.connect(self.cell_cnanged)
+
+    def get_value_in_cell(self, row, col):
+        item = self.item(row, col)
+
+        return item.text()
+
+    def cell_cnanged(self, row, col):
+        table = Store.get_current_tab()
+        pk_id = self.get_value_in_cell(row, 0)
+        value = self.get_value_in_cell(row, col)
+        col_name = self.get_col_name(col)
+
+        self.db.update_table_column(table, pk_id, col_name, value)
+
+    def get_col_name(self, col):
+        item = self.horizontalHeaderItem(col)
+        return item.text()
     def wheelEvent(self, evt):
         super().wheelEvent(evt)
         scrollbar = self.verticalScrollBar()
@@ -27,6 +46,8 @@ class Table(QTableWidget):
 
         self.set_table_headers(headers)
         self.set_table_rows(rows)
+
+        self.init_signals()
 
         return self
 
