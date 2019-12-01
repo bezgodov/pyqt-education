@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QMenu, QAction
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCursor
 
 from app.models.Database import Database
 from app.models.Store import Store
@@ -74,7 +75,7 @@ class Table(QTableWidget):
     def set_row_columns(self, row, rowPosition):
         for j, c in enumerate(row):
             item = QTableWidgetItem(str(c))
-            if (j == 0):
+            if j == 0:
                 item.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
             self.setItem(rowPosition, j, item)
 
@@ -100,3 +101,29 @@ class Table(QTableWidget):
         Store.set_last_row(Store.get_current_tab(), last_row_loaded)
 
         return data['rows']
+
+    def contextMenuEvent(self, event):
+        menu = QMenu(self)
+
+        edit_action = QAction('Edit cell', self)
+        edit_action.triggered.connect(self.edit_cell)
+        menu.addAction(edit_action)
+
+        remove_action = QAction('Remove row', self)
+        remove_action.triggered.connect(self.remove_row)
+        menu.addAction(remove_action)
+
+        menu.popup(QCursor.pos())
+
+    def edit_cell(self):
+        cell = self.currentItem()
+        self.editItem(cell)
+
+    def remove_row(self):
+        row = self.currentRow()
+
+        table = Store.get_current_tab()
+        pk_id = self.get_value_in_cell(row, 0)
+        self.db.remove_table_row(table, pk_id)
+
+        self.removeRow(row)

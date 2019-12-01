@@ -2,6 +2,8 @@ import os
 import sqlite3
 from sqlite3 import Error
 
+from app.models.Store import Store
+
 class Database():
     DB_PATH = '../../assets/databases/numeral-gestures/'
     DB_FILENAME = 'database.sqlite'
@@ -64,3 +66,15 @@ class Database():
         table_description = cur.description
 
         return table_description[0][0]
+
+    def remove_table_row(self, table, pk_id):
+        _table = table['title']
+        pk = self.get_table_primary_key(_table)
+        query = 'DELETE FROM %s WHERE %s = ?' %(_table, pk)
+        cur = self.get_cursor()
+        cur.execute(query, (pk_id,))
+
+        self.connection.commit()
+
+        message = 'Removed row from table "%s" where "%s" is "%s"' %(_table, pk, pk_id)
+        Store.show_message_in_status_bar(message)
