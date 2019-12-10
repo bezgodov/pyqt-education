@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from sqlite3 import Error
+import re
 
 from app.models.Store import Store
 
@@ -28,6 +29,18 @@ class Database():
         path = cur_dir + '/' + Database.DB_PATH + Database.DB_FILENAME
         return path
 
+    def get_table_data_by_foreign_key(self, table):
+        query = "SELECT * FROM %s LIMIT ?" %(table)
+        cur = self.get_cursor()
+        cur.execute(query, (Database.ROWS_PER_LOAD, ))
+        rows = cur.fetchall()
+        headers = self.get_table_headers(cur.description)
+
+        return {
+            'headers': headers,
+            'rows': rows,
+        }
+
     def get_table_data(self, name, start):
         query = "SELECT * FROM %s LIMIT ? OFFSET ?" %(name)
         cur = self.get_cursor()
@@ -39,6 +52,26 @@ class Database():
             'headers': headers,
             'rows': rows,
         }
+
+    def get_foreign_keys(self, table):
+        query = "SELECT sql FROM sqlite_master WHERE sql LIKE('%REFERENCES%') and name = ?"
+        cur = self.get_cursor()
+        cur.execute(query, (table, ))
+        queries = cur.fetchall()
+
+        regex = r"FOREIGN KEY[\s]*\(`[\s]*([\w\W]+?)[\s]*`[\s]*\)[\s]*REFERENCES[\s]*`[\s]*([\w\W]+?)[\s]*`[\s]*\([\s]*`[\s]*([\w\W]+?)`[\s]*\)"
+        res = {}
+
+        for q in queries:
+            matches = re.finditer(regex, q[0])
+            for i, match in enumerate(matches):
+                _groups = match.groups()
+                res[_groups[0]] = {
+                    'table': _groups[1],
+                    'column': _groups[2],
+                }
+
+        return res
 
     def get_table_columns_names(self, name):
         query = "SELECT * FROM %s" %(name)

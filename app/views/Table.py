@@ -4,13 +4,17 @@ from PyQt5.QtGui import QCursor
 
 from app.models.Database import Database
 from app.models.Store import Store
+from app.views.ComboBox import ComboBox
 
 class Table(QTableWidget):
 
     PERCENT_TO_START_LOADING = 0.9
 
-    def __init__(self):
+    def __init__(self, name, foreign_keys):
         QTableWidget.__init__(self)
+        self.name = name
+        self.foreign_keys = foreign_keys
+
         self.db = Database()
         self.setMinimumSize(640, 480)
         self.resize(900, 900)
@@ -79,6 +83,30 @@ class Table(QTableWidget):
             if j == 0:
                 item.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
             self.setItem(rowPosition, j, item)
+
+            if self.is_column_foreign_key(j):
+                _column = self.get_col_name(j)
+                values = self.get_foreign_key_values(_column)
+
+                pk_id = self.get_value_in_cell(rowPosition, 0)
+                comboBox = ComboBox(values, _column, c, self.foreign_keys, pk_id)
+
+                self.setCellWidget(rowPosition, j, comboBox)
+
+    def get_foreign_key_values(self, column):
+        table = self.foreign_keys[column]['table']
+        column = self.foreign_keys[column]['column']
+
+        res = self.db.get_table_data_by_foreign_key(table)
+
+        return res
+
+
+    def is_column_foreign_key(self, column):
+        if len(self.foreign_keys) > 0:
+            return self.get_col_name(column) in self.foreign_keys.keys()
+
+        return False
 
     def add_row_to_table(self, row):
         rowPosition = self.rowCount()

@@ -24,6 +24,10 @@ class Store():
         Store.tabs[index]['table'] = table
 
     @staticmethod
+    def add_foreign_keys(index, keys):
+        Store.tabs[index]['foreign_keys'] = keys
+
+    @staticmethod
     def set_last_row(tab, value):
         tab['last_row_loaded'] = value
 

@@ -8,13 +8,13 @@ from app.views.Table import Table
 class Tabs(QTabWidget):
     def __init__(self):
         QTabWidget.__init__(self)
+        self.db = Database()
 
     def make_tabs(self):
         tabs = []
 
-        db = Database()
-        for table in db.get_all_tables():
-            data = db.get_table_data(table, 0)
+        for table in self.db.get_all_tables():
+            data = self.db.get_table_data(table, 0)
 
             _tab = {
                 'title': table,
@@ -38,7 +38,12 @@ class Tabs(QTabWidget):
 
     def add_tabs(self, tabs):
         for i, _tab in enumerate(tabs):
-            _table = Table()
+            name = _tab['title']
+
+            table_foreign_keys = self.db.get_foreign_keys(name)
+            Store.add_foreign_keys(i, table_foreign_keys)
+
+            _table = Table(name, table_foreign_keys)
             table = _table.generate_table(
                 list(map(lambda t: str(t), _tab['content']['headers'])),
                 _tab['content']['rows']
@@ -46,7 +51,7 @@ class Tabs(QTabWidget):
 
             Store.add_table(i, _table)
 
-            self.addTab(_table, _tab['title'])
+            self.addTab(_table, name)
 
     @pyqtSlot()
     def tab_click(self):
