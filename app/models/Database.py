@@ -91,9 +91,11 @@ class Database():
 
         return list(map(lambda t: t[0], cur.fetchall()))
 
-    def update_table_column(self, table, pk_id, col, value):
+    def update_table_column(self, table, pk_id, col, value, pk = None):
         _table = table['title']
-        pk = self.get_table_primary_key(_table)
+        
+        if pk == None:
+            pk = self.get_table_primary_key(_table)
         query = 'UPDATE %s SET %s = ? WHERE %s = ?' %(_table, col, pk)
         cur = self.get_cursor()
         cur.execute(query, (value, pk_id,))

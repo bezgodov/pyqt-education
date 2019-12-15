@@ -18,6 +18,7 @@ class ComboBox(QComboBox):
         headers = values['headers']
         foreign_key_position = headers.index(foreign_keys[_column]['column'])
 
+        is_found_value = False
         for val_index, v in enumerate(values['rows']):
             val = " | ".join([str(_v) for _v_index, _v in enumerate(v) if _v_index != foreign_key_position])
             val = (val[:35] + '..') if len(val) > 35 else val
@@ -27,6 +28,12 @@ class ComboBox(QComboBox):
             self.addItem(val, foreign_key_value)
             if v[foreign_key_position] == c:
                 self.setCurrentIndex(val_index)
+                is_found_value = True
+
+        self.insertItem(0, 'NULL', 'NULL')
+
+        if not is_found_value:
+            self.setCurrentIndex(0)
 
         self.currentIndexChanged.connect(self.combobox_changed)
 

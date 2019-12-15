@@ -155,4 +155,12 @@ class Table(QTableWidget):
         pk_id = self.get_value_in_cell(row, 0)
         self.db.remove_table_row(table, pk_id)
 
+        for tab in Store.get_all_tabs():
+            if 'foreign_keys' in tab.keys():
+                for key in tab['foreign_keys']:
+                    _info = tab['foreign_keys'][key]
+                    if _info['table'] == self.name:
+                        _connected_table_name = tab['title']
+                        self.db.update_table_column(tab, 'NULL', key, pk_id, key)
+
         self.removeRow(row)
